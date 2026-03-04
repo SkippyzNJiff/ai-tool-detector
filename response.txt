@@ -1,0 +1,19 @@
+curl 'https://api.gptzero.me/v3/ai/text' \
+  -H 'accept: */*' \
+  -H 'accept-language: en-US,en;q=0.8' \
+  -H 'content-type: application/json' \
+  -b '_ca_device_id=ca_903950f3-8588-4ca7-aaff-b67cc9004172; accessToken4=eyJhbGciOiJIUzI1NiIsImtpZCI6IkxQUGtRbDRKRlQvcmY5VkoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2x5ZHFoZ2R6aHZzcWxjb2JkZnhpLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIzMDNmMDEzZS1iOTA5LTQxYWEtOGVhOS1jZWVmNGFjYjc2NjMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzczMjEzNTM1LCJpYXQiOjE3NzI2MDg3NjgsImVtYWlsIjoic2tpcHB5em5qaWZmeUBwcm90b24ubWUiLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoic2tpcHB5em5qaWZmeUBwcm90b24ubWUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZmluZ2VycHJpbnRfaWQiOiI2MDg0ODk1M2I4NmM0Nzk5Y2YyNzQ4YTM5M2I2MDA3MyIsImZpcnN0X25hbWUiOiJmYWdhciIsImZ1bGxfbmFtZSI6ImZhZ2FyIEFzdHJpbmdsaSIsImluZHVzdHJ5IjoiIiwiaW5zdGl0dXRpb25fc2l6ZSI6IiIsImxhc3RfbmFtZSI6IkFzdHJpbmdsaSIsImxtcyI6IiIsIm5ld191c2VyIjoiWSIsIm9yZyI6IiIsIm9yZ19yb2xlIjoiIiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJwbGFuIjoiIiwicmVmZXJyYWxfY29kZV91c2VkX2luX3JlZ2lzdHJhdGlvbiI6IiIsInNvdXJjZSI6Imd1ZXN0LWFjY291bnQiLCJzdHVkZW50X3doaXRlbGlzdF9pbnZpdGVfc3RhdHVzIjoiIiwic3ViIjoiMzAzZjAxM2UtYjkwOS00MWFhLThlYTktY2VlZjRhY2I3NjYzIiwidGVhY2hlcl93aGl0ZWxpc3RfaW52aXRlX3N0YXR1cyI6IiIsInRlbmFudF9pZCI6IiIsInVzZXJfYW5vbnltb3VzX2lkX2JlZm9yZV9zaWdudXAiOiJkYjUyM2IxZi0wNzVmLTRkMDMtYjczMC1hYzFkOTRiMzdhM2MifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3MjYwODc2OH1dLCJzZXNzaW9uX2lkIjoiNWRkYmYyZjgtZjg1OC00MTlkLTliOWQtN2U1MzRmMTQ2YzY4IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.eVRLdFboMmVM1kMGZGecQLc0O-A6Vk6ZsE02p5fGNX0; plan=Free; AMP_MKTG_8f1ede8e9c=JTdCJTdE; __Host-gptzero-csrf-token=00dfa50fa0264d2ae643e272a93603daac515e8f87dd11999fcb7f72ed81619106c548df9f75c5ef742f46c2746725012d5511b084d6d70165854a0b335bb8ab%7Cf993aad5a6b50b089dec9a05397d292f6b0008d186425151706973e4666cc774; AMP_8f1ede8e9c=JTdCJTIyZGV2aWNlSWQlMjIlM0ElMjI2NmE2ZTQ2NS1lYTY5LTRjNmQtYWEyZS1lYWFjZDQ3ODdmZjUlMjIlMkMlMjJ1c2VySWQlMjIlM0ElMjIzMDNmMDEzZS1iOTA5LTQxYWEtOGVhOS1jZWVmNGFjYjc2NjMlMjIlMkMlMjJzZXNzaW9uSWQlMjIlM0ExNzcyNjE4ODE0MzUxJTJDJTIyb3B0T3V0JTIyJTNBZmFsc2UlMkMlMjJsYXN0RXZlbnRUaW1lJTIyJTNBMTc3MjYyMDYxMjc3OSUyQyUyMmxhc3RFdmVudElkJTIyJTNBMjYwJTJDJTIycGFnZUNvdW50ZXIlMjIlM0E1JTdE' \
+  -H 'origin: https://app.gptzero.me' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://app.gptzero.me/' \
+  -H 'sec-ch-ua: "Not:A-Brand";v="99", "Brave";v="145", "Chromium";v="145"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-site' \
+  -H 'sec-gpc: 1' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36' \
+  -H 'x-gptzero-platform: webapp' \
+  -H 'x-page: /documents/2096c596-92be-4a3f-bb48-883145c13181' \
+  --data-raw '{"scanId":"2096c596-92be-4a3f-bb48-883145c13181","multilingual":true,"document":"test\n","interpretability_required":false}'
