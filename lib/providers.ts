@@ -1,7 +1,6 @@
 import { appEnv, isProviderEnabled } from "@/lib/env";
 import { findNumericScore, parseJsonSafely, stringifyCookies } from "@/lib/provider-utils";
 import { sessionManager } from "@/lib/session-manager";
-import { playwrightFetch } from "@/lib/session/playwright-fetch";
 import type {
   ProviderClass,
   ProviderHealthStatus,
