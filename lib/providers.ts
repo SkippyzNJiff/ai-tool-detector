@@ -1,6 +1,5 @@
 import { appEnv, isProviderEnabled } from "@/lib/env";
 import { findNumericScore, parseJsonSafely, stringifyCookies } from "@/lib/provider-utils";
-import { sessionManager } from "@/lib/session-manager";
 import type {
   ProviderClass,
   ProviderHealthStatus,
@@ -54,7 +53,14 @@ export function getEnabledProviders(preference: ProviderPreference) {
 export async function getProviderStatuses(): Promise<ProviderHealthStatus[]> {
   return providers.map((provider) => {
     if (provider.id === "gptzero") {
-      return sessionManager.getHealthStatus();
+      // GPTZero uses direct cookie auth, no session management needed
+      return {
+        id: "gptzero" as const,
+        enabled: provider.enabled(),
+        class: provider.providerClass,
+        healthy: provider.enabled() && !!appEnv.gptZeroDirectCookie,
+        degradedReason: provider.enabled() && !appEnv.gptZeroDirectCookie ? "GPTZERO_COOKIES not configured" : undefined
+      };
     }
 
     return {
