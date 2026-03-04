@@ -124,41 +124,65 @@ async function analyzeWithQuillBot(text: string): Promise<ProviderResult> {
   const startedAt = Date.now();
 
   try {
-    const response = await playwrightFetch.fetch("https://quillbot.com/api/ai-detector/score", {
-      method: "POST",
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        "Content-Type": "application/json",
-        Origin: "https://quillbot.com",
-        Referer: "https://quillbot.com/ai-content-detector",
-        "platform-type": "webapp",
-        "qb-product": "AI_CONTENT_DETECTOR",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
-      },
-      body: JSON.stringify({ text, language: "en", explain: false })
-    });
+    // Use the full cookie string from env (includes useridtoken Firebase JWT)
+    if (!appEnv.quillBotDirectCookie) {
+      return {
+        provider: "quillbot",
+        status: "error",
+        errorCode: "bad_response",
+        message: "QUILLBOT_COOKIES not configured in .env.local",
+        durationMs: Date.now() - startedAt
+      };
+    }
 
-    const payload = await parseJsonSafely(response);
+    const response = await axios.post("https://quillbot.com/api/ai-detector/score", 
+      { text, language: "en", explain: false },
+      {
+        headers: {
+          accept: "application/json, text/plain, */*",
+          "accept-language": "en-US,en;q=0.8",
+          "content-type": "application/json",
+          origin: "https://quillbot.com",
+          "platform-type": "webapp",
+          "qb-product": "AI_CONTENT_DETECTOR",
+          referer: "https://quillbot.com/ai-content-detector",
+          "sec-ch-ua": '"Not:A-Brand";v="99", "Brave";v="145", "Chromium";v="145"',
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": '"Windows"',
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "sec-gpc": "1",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+          cookie: appEnv.quillBotDirectCookie
+        },
+        httpsAgent: customAgent,
+        timeout: 20000,
+        validateStatus: () => true
+      }
+    );
+
+    const payload = response.data;
     
-    // Log the raw payload internally for debugging if needed, but don't fail immediately if 403, check payload first
-    if (!response.ok && !payload) {
+    if (response.status !== 200) {
       return mapHttpError("quillbot", response.status, Date.now() - startedAt);
     }
 
-    // QuillBot seems to nest their data sometimes or use different keys
-    let nestedData = null;
+    // QuillBot returns: { data: { value: { aiScore: 1.0, chunks: [...] } } }
+    let nestedValue = null;
     if (payload && typeof payload === "object" && !Array.isArray(payload) && "data" in payload) {
-      nestedData = (payload as Record<string, unknown>).data;
+      const data = (payload as Record<string, unknown>).data;
+      if (data && typeof data === "object" && !Array.isArray(data) && "value" in data) {
+        nestedValue = (data as Record<string, unknown>).value;
+      }
     }
     
     const score = findNumericScore(payload, [
-      "aiProbability",
+      "data.value.aiScore",
+      "aiScore",
       "score",
-      "probability",
-      "generated_probability",
-      "ai_score" // added potential fallback keys
-    ]) ?? (nestedData && typeof nestedData === "object" && !Array.isArray(nestedData) ? findNumericScore(nestedData as Record<string, unknown>, ["aiProbability", "score", "probability"]) : null);
+      "probability"
+    ]) ?? (nestedValue && typeof nestedValue === "object" && !Array.isArray(nestedValue) ? findNumericScore(nestedValue as Record<string, unknown>, ["aiScore", "score", "probability"]) : null);
 
     if (score === null || score === undefined) {
       return {
@@ -170,10 +194,13 @@ async function analyzeWithQuillBot(text: string): Promise<ProviderResult> {
       };
     }
 
+    // QuillBot might return 0-1 probability, convert to 0-100 if needed
+    const percentageScore = score <= 1 ? score * 100 : score;
+
     return {
       provider: "quillbot",
       status: "success",
-      score: Math.round(score),
+      score: Math.round(percentageScore),
       rawResponse: payload,
       durationMs: Date.now() - startedAt
     };

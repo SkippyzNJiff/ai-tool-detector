@@ -30,7 +30,8 @@ export const appEnv = {
   gptZeroLoginUrl: process.env.GPTZERO_LOGIN_URL ?? "https://app.gptzero.me/login",
   gptZeroReferer: process.env.GPTZERO_REFERER ?? "https://app.gptzero.me/",
   gptZeroScanId: process.env.GPTZERO_SCAN_ID, // Reusable scanId from your account
-  gptZeroDirectCookie: process.env.GPTZERO_COOKIES?.replace(/^"|"$/g, '') // Full cookie string including CSRF
+  gptZeroDirectCookie: process.env.GPTZERO_COOKIES?.replace(/^"|"$/g, ''), // Full cookie string including CSRF
+  quillBotDirectCookie: process.env.QUILLBOT_COOKIES?.replace(/^"|"$/g, '') // Full QuillBot cookie string with useridtoken
 };
 
 export function isProviderEnabled(provider: ProviderId) {
