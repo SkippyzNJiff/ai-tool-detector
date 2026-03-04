@@ -5,7 +5,7 @@ function readBoolean(value: string | undefined, fallback: boolean) {
     return fallback;
   }
 
-  return value.toLowerCase() === "true";
+  return value.trim().toLowerCase() === "true";
 }
 
 function readNumber(value: string | undefined, fallback: number) {
