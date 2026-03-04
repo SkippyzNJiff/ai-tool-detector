@@ -182,92 +182,83 @@ async function analyzeWithQuillBot(text: string): Promise<ProviderResult> {
   }
 }
 
+import axios from 'axios';
+import https from 'https';
+
+// Create a custom HTTPS agent that mimics a browser's TLS fingerprint closely enough for basic Cloudflare
+const customAgent = new https.Agent({
+  rejectUnauthorized: true,
+  ciphers: 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384',
+});
+
+// ... existing code ...
+
 async function analyzeWithGptZero(text: string): Promise<ProviderResult> {
   const startedAt = Date.now();
 
   try {
-    const session = await sessionManager.getSession();
-    const scanId = crypto.randomUUID();
-    
-    const hasDirectCookie = appEnv.gptZeroDirectCookie && appEnv.gptZeroDirectCookie.length > 0;
-    
-    // Prepare cookies for Playwright injection
-    const playwrightCookies: { name: string, value: string, domain: string, path: string }[] = [];
-    if (hasDirectCookie && appEnv.gptZeroDirectCookie) {
-      playwrightCookies.push({
-        name: "accessToken4",
-        value: appEnv.gptZeroDirectCookie,
-        domain: ".gptzero.me",
-        path: "/"
-      });
-      playwrightCookies.push({
-        name: "_ca_device_id",
-        value: "ca_903950f3-8588-4ca7-aaff-b67cc9004172",
-        domain: ".gptzero.me",
-        path: "/"
-      });
-      playwrightCookies.push({
-        name: "plan",
-        value: "Free",
-        domain: ".gptzero.me",
-        path: "/"
-      });
-    } else {
-      // Format session cookies for Playwright
-      for (const cookie of session.cookies) {
-        if (cookie.value) {
-          playwrightCookies.push({
-            name: cookie.name,
-            value: cookie.value,
-            domain: cookie.domain || ".gptzero.me",
-            path: cookie.path || "/"
-          });
-        }
-      }
+    // Use the fixed scanId from env (reused across all requests)
+    const scanId = appEnv.gptZeroScanId || crypto.randomUUID();
+
+    // Use the full cookie string from env (includes CSRF token + all session cookies)
+    if (!appEnv.gptZeroDirectCookie) {
+      return {
+        provider: "gptzero",
+        status: "error",
+        errorCode: "bad_response",
+        message: "GPTZERO_COOKIES not configured in .env.local",
+        durationMs: Date.now() - startedAt
+      };
     }
 
-    // Use Playwright fetch to bypass Cloudflare TLS blocking
-    const response = await playwrightFetch.fetch("https://api.gptzero.me/v3/ai/text", {
-      method: "POST",
+    // Submit the scan with full cookie auth
+    const response = await axios.post("https://api.gptzero.me/v3/ai/text", {
+      scanId,
+      multilingual: true,
+      document: `${text}\n`,
+      interpretability_required: false
+    }, {
       headers: {
         accept: "*/*",
+        "accept-language": "en-US,en;q=0.8",
         "content-type": "application/json",
         origin: "https://app.gptzero.me",
+        priority: "u=1, i",
         referer: "https://app.gptzero.me/",
+        "sec-ch-ua": '"Not:A-Brand";v="99", "Brave";v="145", "Chromium";v="145"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-site",
+        "sec-gpc": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
         "x-gptzero-platform": "webapp",
         "x-page": `/documents/${scanId}`,
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+        cookie: appEnv.gptZeroDirectCookie
       },
-      body: JSON.stringify({
-        scanId,
-        multilingual: true,
-        document: `${text}\n`,
-        interpretability_required: false
-      })
-    }, playwrightCookies);
+      httpsAgent: customAgent,
+      timeout: 20000,
+      validateStatus: () => true
+    });
 
-    const payload = await parseJsonSafely(response);
+    const payload = response.data;
     
-    if (!response.ok && !payload) {
+    if (response.status !== 200) {
       return mapHttpError("gptzero", response.status, Date.now() - startedAt);
     }
 
-    // NEW GPTZERO PARSER based on your provided JSON
-    // Look for class_probabilities.ai in the documents array
+    // NEW GPTZERO PARSER
     let score = null;
-    
     if (payload && typeof payload === 'object' && 'documents' in payload && Array.isArray((payload as any).documents) && (payload as any).documents.length > 0) {
       const doc = (payload as any).documents[0];
       if (doc?.class_probabilities?.ai !== undefined) {
-         // It's a 0-1 probability, convert to 0-100 percentage
          score = doc.class_probabilities.ai * 100;
       } else if (doc?.completely_generated_prob !== undefined) {
          score = doc.completely_generated_prob * 100;
       }
     }
     
-    // Fallback to old parser just in case
     if (score === null) {
       score = findNumericScore(payload, [
         "average_generated_prob",
@@ -276,7 +267,6 @@ async function analyzeWithGptZero(text: string): Promise<ProviderResult> {
         "probability",
         "score"
       ]);
-      // if it was found via old parser, assume it might already be 0-100 or 0-1, handle scale
       if (score !== null && score <= 1) {
          score = score * 100;
       }
@@ -287,7 +277,7 @@ async function analyzeWithGptZero(text: string): Promise<ProviderResult> {
         provider: "gptzero",
         status: "error",
         errorCode: "bad_response",
-        message: "GPTZero response did not include a recognizable score. Format may have changed.",
+        message: "GPTZero response did not include a recognizable score.",
         durationMs: Date.now() - startedAt
       };
     }
@@ -299,20 +289,11 @@ async function analyzeWithGptZero(text: string): Promise<ProviderResult> {
       rawResponse: payload,
       durationMs: Date.now() - startedAt
     };
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("GPTZero")) {
-      return {
-        provider: "gptzero",
-        status: "error",
-        errorCode: "session_refresh_failed",
-        message: error.message,
-        durationMs: Date.now() - startedAt
-      };
-    }
-
+  } catch (error: any) {
     return mapThrowable("gptzero", error, startedAt);
   }
 }
+
 
 function mapHttpError(
   provider: ProviderId,

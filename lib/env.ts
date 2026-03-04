@@ -29,7 +29,8 @@ export const appEnv = {
   gptZeroHeadless: readBoolean(process.env.GPTZERO_HEADLESS, true),
   gptZeroLoginUrl: process.env.GPTZERO_LOGIN_URL ?? "https://app.gptzero.me/login",
   gptZeroReferer: process.env.GPTZERO_REFERER ?? "https://app.gptzero.me/",
-  gptZeroDirectCookie: process.env.GPTZERO_ACCESS_TOKEN // Support direct cookie auth
+  gptZeroScanId: process.env.GPTZERO_SCAN_ID, // Reusable scanId from your account
+  gptZeroDirectCookie: process.env.GPTZERO_COOKIES?.replace(/^"|"$/g, '') // Full cookie string including CSRF
 };
 
 export function isProviderEnabled(provider: ProviderId) {
