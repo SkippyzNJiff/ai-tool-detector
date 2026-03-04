@@ -17,21 +17,22 @@ function readNumber(value: string | undefined, fallback: number) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+// Use a getter-based object so env vars are read at access time, not module load time
 export const appEnv = {
-  enableZeroGpt: readBoolean(process.env.ENABLE_ZEROGPT, true),
-  enableQuillBot: readBoolean(process.env.ENABLE_QUILLBOT, false),
-  enableGptZero: readBoolean(process.env.ENABLE_GPTZERO, false),
-  strictStableOnlyMode: readBoolean(process.env.STRICT_STABLE_ONLY_MODE, false),
-  analyzeRateLimitMax: readNumber(process.env.ANALYZE_RATE_LIMIT_MAX, 10),
-  analyzeRateLimitWindowMs: readNumber(process.env.ANALYZE_RATE_LIMIT_WINDOW_MS, 10 * 60 * 1000),
-  gptZeroEmail: process.env.GPTZERO_EMAIL,
-  gptZeroPassword: process.env.GPTZERO_PASSWORD,
-  gptZeroHeadless: readBoolean(process.env.GPTZERO_HEADLESS, true),
-  gptZeroLoginUrl: process.env.GPTZERO_LOGIN_URL ?? "https://app.gptzero.me/login",
-  gptZeroReferer: process.env.GPTZERO_REFERER ?? "https://app.gptzero.me/",
-  gptZeroScanId: process.env.GPTZERO_SCAN_ID, // Reusable scanId from your account
-  gptZeroDirectCookie: process.env.GPTZERO_COOKIES?.replace(/^"|"$/g, ''), // Full cookie string including CSRF
-  quillBotDirectCookie: process.env.QUILLBOT_COOKIES?.replace(/^"|"$/g, '') // Full QuillBot cookie string with useridtoken
+  get enableZeroGpt() { return readBoolean(process.env.ENABLE_ZEROGPT, true); },
+  get enableQuillBot() { return readBoolean(process.env.ENABLE_QUILLBOT, false); },
+  get enableGptZero() { return readBoolean(process.env.ENABLE_GPTZERO, false); },
+  get strictStableOnlyMode() { return readBoolean(process.env.STRICT_STABLE_ONLY_MODE, false); },
+  get analyzeRateLimitMax() { return readNumber(process.env.ANALYZE_RATE_LIMIT_MAX, 10); },
+  get analyzeRateLimitWindowMs() { return readNumber(process.env.ANALYZE_RATE_LIMIT_WINDOW_MS, 10 * 60 * 1000); },
+  get gptZeroEmail() { return process.env.GPTZERO_EMAIL; },
+  get gptZeroPassword() { return process.env.GPTZERO_PASSWORD; },
+  get gptZeroHeadless() { return readBoolean(process.env.GPTZERO_HEADLESS, true); },
+  get gptZeroLoginUrl() { return process.env.GPTZERO_LOGIN_URL ?? "https://app.gptzero.me/login"; },
+  get gptZeroReferer() { return process.env.GPTZERO_REFERER ?? "https://app.gptzero.me/"; },
+  get gptZeroScanId() { return process.env.GPTZERO_SCAN_ID; },
+  get gptZeroDirectCookie() { return process.env.GPTZERO_COOKIES?.replace(/^"|"$/g, ''); },
+  get quillBotDirectCookie() { return process.env.QUILLBOT_COOKIES?.replace(/^"|"$/g, ''); }
 };
 
 export function isProviderEnabled(provider: ProviderId) {
