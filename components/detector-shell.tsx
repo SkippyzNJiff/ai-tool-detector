@@ -143,7 +143,7 @@ export function DetectorShell() {
         <aside className="order-2 flex rounded-3xl border border-[#e6dbc6] bg-[linear-gradient(180deg,#f8f1e3_0%,#efe4cf_100%)] p-5 shadow-[0_20px_60px_-42px_rgba(84,60,36,0.4)] md:p-6 xl:order-1 xl:sticky xl:top-8 xl:h-fit xl:min-h-[calc(100vh-4rem)] xl:flex-col">
           <div className="space-y-4">
             <Image
-              src="/signal-draft-logo.png"
+              src="/signal-draft-logo-2026.png"
               alt="Signal Draft"
               width={220}
               height={88}
