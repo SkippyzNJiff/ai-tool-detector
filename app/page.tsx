@@ -1,5 +1,5 @@
-import { MinimalDesignThree } from "@/components/minimal-design-three";
+import { DetectorShell } from "@/components/detector-shell";
 
 export default function Home() {
-  return <MinimalDesignThree />;
+  return <DetectorShell />;
 }
