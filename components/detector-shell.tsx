@@ -138,33 +138,38 @@ export function DetectorShell() {
   ).length;
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(145deg,#f8f8f8_0%,#eef1f4_100%)] text-[#0f172a]">
-      <div className="mx-auto grid min-h-screen max-w-[1400px] grid-cols-1 gap-4 p-4 lg:grid-cols-[240px_minmax(0,1fr)_260px]">
-        <aside className="rounded-2xl bg-[linear-gradient(90deg,#a8a8a8_0%,#7d7d7d_100%)] p-6 text-black">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,#f8fafc_0%,#eff3f7_35%,#e8edf3_100%)] text-slate-900">
+      <div className="mx-auto grid min-h-screen w-full max-w-[1520px] grid-cols-1 gap-4 p-4 md:gap-5 md:p-6 xl:grid-cols-[260px_minmax(0,1fr)_330px] xl:gap-6 xl:p-8">
+        <aside className="order-2 rounded-3xl border border-white/70 bg-[linear-gradient(180deg,#f9fbfc_0%,#edf1f5_100%)] p-5 shadow-[0_20px_60px_-42px_rgba(15,23,42,0.5)] md:p-6 xl:order-1 xl:sticky xl:top-8 xl:h-fit">
           <div className="space-y-4">
             <Image
               src="/signal-draft-logo.png"
               alt="Signal Draft"
-              width={190}
-              height={70}
-              className="h-auto w-full max-w-[190px]"
+              width={196}
+              height={72}
+              className="h-auto w-[170px]"
               priority
             />
-            <p className="text-sm tracking-wide">SIGNAL DRAFT</p>
+            <p className="text-xs font-medium uppercase tracking-[0.26em] text-slate-500">
+              Signal Draft
+            </p>
           </div>
 
-          <div className="mt-10 text-[28px] leading-tight">other<br />webpages<br />(future)</div>
+          <div className="mt-8 rounded-2xl border border-slate-200/80 bg-white/70 p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Workspace</p>
+            <p className="mt-2 text-[15px] leading-6 text-slate-700">Other webpages integration is planned for a future release.</p>
+          </div>
 
-          <div className="mt-10 space-y-3 text-sm">
-            <p className="font-semibold">Mode</p>
-            <div className="flex gap-2">
+          <div className="mt-8 space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Mode</p>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setProviderPreference("all")}
-                className={`rounded-full border px-3 py-1.5 text-xs ${
+                className={`rounded-xl border px-3 py-2 text-xs font-semibold tracking-[0.14em] transition-colors ${
                   providerPreference === "all"
-                    ? "border-black bg-black text-white"
-                    : "border-black/40 bg-white/50"
+                    ? "border-slate-900 bg-slate-900 text-white"
+                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
                 ALL
@@ -172,10 +177,10 @@ export function DetectorShell() {
               <button
                 type="button"
                 onClick={() => setProviderPreference("stable-only")}
-                className={`rounded-full border px-3 py-1.5 text-xs ${
+                className={`rounded-xl border px-3 py-2 text-xs font-semibold tracking-[0.14em] transition-colors ${
                   providerPreference === "stable-only"
-                    ? "border-black bg-black text-white"
-                    : "border-black/40 bg-white/50"
+                    ? "border-slate-900 bg-slate-900 text-white"
+                    : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
                 STABLE
@@ -183,27 +188,32 @@ export function DetectorShell() {
             </div>
           </div>
 
-          <p className="mt-20 text-2xl">Log in (future)</p>
+          <p className="mt-10 text-sm text-slate-500">Account access and shared projects are coming soon.</p>
         </aside>
 
-        <section className="rounded-2xl p-2 sm:p-4">
-          <form onSubmit={handleSubmit}>
-            <h1 className="mb-5 text-center text-3xl tracking-wide">ENTER TEXT</h1>
+        <section className="order-1 rounded-3xl border border-white/70 bg-white/75 p-4 shadow-[0_20px_60px_-42px_rgba(15,23,42,0.55)] backdrop-blur-sm md:p-6 lg:p-8 xl:order-2">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">Input workspace</h1>
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+                {charCount} / 15000 chars
+              </span>
+            </div>
 
             <textarea
               value={text}
               onChange={(event) => setText(event.target.value)}
               placeholder="Paste text to analyze..."
               spellCheck={false}
-              className="h-[300px] w-full rounded-2xl border-4 border-[#8a8a8a] bg-white px-6 py-4 text-base outline-none"
+              className="h-[290px] w-full resize-y rounded-2xl border border-slate-200 bg-white px-5 py-4 text-[15px] leading-6 text-slate-800 shadow-inner outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 md:h-[340px]"
             />
 
-            <div className="mt-3 flex items-center justify-between text-sm text-slate-600">
-              <span>{charCount} chars (min 100, max 15000)</span>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 md:text-sm">
+              <span>Minimum 100 chars required to run analysis.</span>
               <span>{healthyEnabledProviders}/{providerStatuses.length || 0} providers healthy</span>
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-center gap-8">
+            <div className="grid gap-3 sm:grid-cols-[1fr_1fr] lg:max-w-[420px]">
               <button
                 type="button"
                 onClick={() => {
@@ -213,98 +223,138 @@ export function DetectorShell() {
                   }
                   setText((prev) => prev.replace(/\s+/g, " ").trim());
                 }}
-                className="min-w-[160px] rounded-2xl border-4 border-black bg-white px-8 py-3 text-2xl"
+                className="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold tracking-[0.12em] text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
               >
                 HUMANIZE
               </button>
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="min-w-[160px] rounded-2xl border-4 border-black bg-white px-8 py-3 text-2xl disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold tracking-[0.14em] text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
               >
                 {status === "loading" ? "CHECKING..." : "CHECK"}
               </button>
             </div>
 
-            <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-              {(Object.keys(providerMeta) as Array<keyof typeof providerMeta>).map((id) => (
-                <div key={id} className="flex items-center justify-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3">
-                  <Image
-                    src={providerMeta[id].logoPath}
-                    alt={providerMeta[id].logoAlt}
-                    width={24}
-                    height={24}
-                    className="h-6 w-6 rounded-sm object-cover"
-                  />
-                  <span className="text-lg tracking-wide">{providerMeta[id].name}</span>
-                </div>
-              ))}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 md:p-5">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Providers</p>
+                <span className="text-xs text-slate-500">{providersInMode.length} active in current mode</span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {(Object.keys(providerMeta) as Array<keyof typeof providerMeta>).map((id) => {
+                  const providerHealth = providerStatuses.find((provider) => provider.id === id);
+                  const enabled = !!providerHealth?.enabled;
+                  const healthy = !!providerHealth?.healthy;
+
+                  return (
+                    <div key={id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <Image
+                          src={providerMeta[id].logoPath}
+                          alt={providerMeta[id].logoAlt}
+                          width={22}
+                          height={22}
+                          className="h-[22px] w-[22px] rounded-md object-cover"
+                        />
+                        <span className="text-xs font-semibold tracking-[0.12em] text-slate-700">{providerMeta[id].name}</span>
+                      </div>
+                      <span
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          !enabled ? "bg-slate-300" : healthy ? "bg-emerald-500" : "bg-amber-500"
+                        }`}
+                        aria-label={enabled ? (healthy ? "healthy" : "degraded") : "disabled"}
+                        title={enabled ? (healthy ? "healthy" : "degraded") : "disabled"}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <p className="mt-2 text-center text-xs text-slate-500">TODO: replace provider icons if higher quality brand assets are provided.</p>
           </form>
         </section>
 
-        <aside className="rounded-2xl border-4 border-black bg-[#f2f2f2] p-5">
-          <h2 className="text-3xl tracking-wide">RESULTS</h2>
+        <aside className="order-3 rounded-3xl border border-white/70 bg-[linear-gradient(180deg,#fdfefe_0%,#f3f6fa_100%)] p-5 shadow-[0_20px_60px_-42px_rgba(15,23,42,0.55)] md:p-6 xl:sticky xl:top-8 xl:h-fit">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Results summary</h2>
 
-          {status === "loading" && <p className="mt-6 text-lg">Running analysis...</p>}
+          {status === "loading" && <p className="mt-6 text-sm text-slate-700">Running analysis across selected providers…</p>}
 
           {status === "error" && (
-            <p className="mt-6 text-lg text-red-700">{error || "Analysis failed."}</p>
+            <p className="mt-6 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {error || "Analysis failed."}
+            </p>
           )}
 
           {result && status !== "loading" && (
-            <div className="mt-6 space-y-4">
-              <p className="text-4xl leading-tight">{verdictLabel[result.summary.verdict]}</p>
-              <p className="text-sm">confidence: {result.summary.confidence}/100</p>
-              <p className="text-sm">
-                completed: {result.summary.completedProviders}/{result.summary.totalProviders}
-              </p>
+            <div className="mt-5 space-y-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                <p className="text-xl font-semibold tracking-tight text-slate-900">{verdictLabel[result.summary.verdict]}</p>
+                <p className="mt-2 text-xs uppercase tracking-[0.16em] text-slate-500">Confidence</p>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-slate-800"
+                    style={{ width: `${Math.max(0, Math.min(100, result.summary.confidence))}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-sm text-slate-700">{result.summary.confidence}/100</p>
+                <p className="mt-3 text-xs text-slate-500">
+                  Completed {result.summary.completedProviders}/{result.summary.totalProviders} providers
+                </p>
+              </div>
 
-              <div className="rounded-xl border border-slate-300 bg-white p-3 text-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Provider outputs</p>
                 {successfulProviders.length > 0 ? (
-                  <ul className="space-y-1">
+                  <ul className="mt-3 space-y-2">
                     {successfulProviders.map((provider) => (
-                      <li key={provider.provider}>
-                        {providerMeta[provider.provider].name}: {provider.score}% ({provider.durationMs}ms)
+                      <li key={provider.provider} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2">
+                        <span className="text-xs font-medium text-slate-700">{providerMeta[provider.provider].name}</span>
+                        <span className="text-xs text-slate-600">{provider.score}% · {provider.durationMs}ms</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p>No successful provider scores.</p>
+                  <p className="mt-3 text-slate-500">No successful provider scores.</p>
                 )}
               </div>
             </div>
           )}
 
           {!result && status !== "loading" && status !== "error" && (
-            <div className="mt-8 text-4xl leading-tight">
-              LIKELY HUMAN
-              <br />
-              or
-              <br />
-              LIKELY AI
-            </div>
+            <p className="mt-6 text-sm leading-6 text-slate-600">
+              Submit text to see aggregate verdict, confidence, and per-provider scores.
+            </p>
           )}
 
           {(result?.warnings.length ?? 0) > 0 && (
-            <div className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm">
+            <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
               <p className="mb-1 font-semibold">Warnings</p>
-              <ul className="list-disc pl-5">
+              <ul className="list-disc space-y-1 pl-5">
                 {result?.warnings.map((warning, index) => <li key={index}>{warning}</li>)}
               </ul>
             </div>
           )}
 
-          <div className="mt-6 rounded-xl border border-slate-300 bg-white p-3 text-sm">
-            <p className="font-semibold">Provider status</p>
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-4 text-sm">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Provider health</p>
             {providerStatuses.length === 0 ? (
-              <p className="mt-1 text-slate-500">Unavailable</p>
+              <p className="mt-2 text-slate-500">Unavailable</p>
             ) : (
-              <ul className="mt-1 space-y-1">
+              <ul className="mt-3 space-y-2">
                 {providerStatuses.map((provider) => (
-                  <li key={provider.id}>
-                    {providerMeta[provider.id].name}: {provider.enabled ? (provider.healthy ? "healthy" : "degraded") : "disabled"}
+                  <li key={provider.id} className="flex items-center justify-between gap-2 text-xs">
+                    <span className="font-medium text-slate-700">{providerMeta[provider.id].name}</span>
+                    <span
+                      className={`rounded-full px-2 py-1 ${
+                        !provider.enabled
+                          ? "bg-slate-100 text-slate-500"
+                          : provider.healthy
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {provider.enabled ? (provider.healthy ? "healthy" : "degraded") : "disabled"}
+                    </span>
                   </li>
                 ))}
               </ul>
