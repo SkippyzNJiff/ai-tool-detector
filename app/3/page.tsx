@@ -1,5 +1,5 @@
 import { MinimalDesignThree } from "@/components/minimal-design-three";
 
-export default function Home() {
+export default function DesignThreePage() {
   return <MinimalDesignThree />;
 }
