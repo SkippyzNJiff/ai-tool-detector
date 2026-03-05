@@ -53,13 +53,36 @@ export function getEnabledProviders(preference: ProviderPreference) {
 export async function getProviderStatuses(): Promise<ProviderHealthStatus[]> {
   return providers.map((provider) => {
     if (provider.id === "gptzero") {
-      // GPTZero uses direct cookie auth, no session management needed
+      const enabled = provider.enabled();
+      const healthy = enabled && !!appEnv.gptZeroDirectCookie;
+
       return {
         id: "gptzero" as const,
-        enabled: provider.enabled(),
+        enabled,
         class: provider.providerClass,
-        healthy: provider.enabled() && !!appEnv.gptZeroDirectCookie,
-        degradedReason: provider.enabled() && !appEnv.gptZeroDirectCookie ? "GPTZERO_COOKIES not configured" : undefined
+        healthy,
+        degradedReason: !enabled
+          ? "Feature flag disabled."
+          : !appEnv.gptZeroDirectCookie
+            ? "GPTZERO_COOKIES not configured"
+            : undefined
+      };
+    }
+
+    if (provider.id === "quillbot") {
+      const enabled = provider.enabled();
+      const healthy = enabled && !!appEnv.quillBotDirectCookie;
+
+      return {
+        id: "quillbot" as const,
+        enabled,
+        class: provider.providerClass,
+        healthy,
+        degradedReason: !enabled
+          ? "Feature flag disabled."
+          : !appEnv.quillBotDirectCookie
+            ? "QUILLBOT_COOKIES not configured"
+            : undefined
       };
     }
 

@@ -145,9 +145,9 @@ export function DetectorShell() {
             <Image
               src="/signal-draft-logo-2026.png"
               alt="Signal Draft"
-              width={220}
-              height={88}
-              className="h-auto w-[184px]"
+              width={320}
+              height={128}
+              className="h-auto w-[248px] md:w-[272px]"
               priority
             />
           </div>
