@@ -51,49 +51,89 @@ export function getEnabledProviders(preference: ProviderPreference) {
 }
 
 export async function getProviderStatuses(): Promise<ProviderHealthStatus[]> {
-  return providers.map((provider) => {
-    if (provider.id === "gptzero") {
-      const enabled = provider.enabled();
-      const healthy = enabled && !!appEnv.gptZeroDirectCookie;
+  const statuses = await Promise.all(
+    providers.map(async (provider): Promise<ProviderHealthStatus> => {
+      if (provider.id === "gptzero") {
+        const enabled = provider.enabled();
+        if (!enabled) {
+          return {
+            id: "gptzero",
+            enabled,
+            class: provider.providerClass,
+            healthy: false,
+            degradedReason: "Feature flag disabled."
+          };
+        }
+
+        if (!appEnv.gptZeroDirectCookie) {
+          return {
+            id: "gptzero",
+            enabled,
+            class: provider.providerClass,
+            healthy: false,
+            degradedReason: "GPTZERO_COOKIES not configured"
+          };
+        }
+
+        const probe = await analyzeWithGptZero(
+          "Health probe text for provider status validation."
+        );
+
+        return {
+          id: "gptzero",
+          enabled,
+          class: provider.providerClass,
+          healthy: probe.status === "success",
+          degradedReason: probe.status === "error" ? probe.message : undefined
+        };
+      }
+
+      if (provider.id === "quillbot") {
+        const enabled = provider.enabled();
+        if (!enabled) {
+          return {
+            id: "quillbot",
+            enabled,
+            class: provider.providerClass,
+            healthy: false,
+            degradedReason: "Feature flag disabled."
+          };
+        }
+
+        if (!appEnv.quillBotDirectCookie) {
+          return {
+            id: "quillbot",
+            enabled,
+            class: provider.providerClass,
+            healthy: false,
+            degradedReason: "QUILLBOT_COOKIES not configured"
+          };
+        }
+
+        const probe = await analyzeWithQuillBot(
+          "Health probe text for provider status validation."
+        );
+
+        return {
+          id: "quillbot",
+          enabled,
+          class: provider.providerClass,
+          healthy: probe.status === "success",
+          degradedReason: probe.status === "error" ? probe.message : undefined
+        };
+      }
 
       return {
-        id: "gptzero" as const,
-        enabled,
+        id: provider.id,
+        enabled: provider.enabled(),
         class: provider.providerClass,
-        healthy,
-        degradedReason: !enabled
-          ? "Feature flag disabled."
-          : !appEnv.gptZeroDirectCookie
-            ? "GPTZERO_COOKIES not configured"
-            : undefined
+        healthy: provider.enabled(),
+        degradedReason: provider.enabled() ? undefined : "Feature flag disabled."
       };
-    }
+    })
+  );
 
-    if (provider.id === "quillbot") {
-      const enabled = provider.enabled();
-      const healthy = enabled && !!appEnv.quillBotDirectCookie;
-
-      return {
-        id: "quillbot" as const,
-        enabled,
-        class: provider.providerClass,
-        healthy,
-        degradedReason: !enabled
-          ? "Feature flag disabled."
-          : !appEnv.quillBotDirectCookie
-            ? "QUILLBOT_COOKIES not configured"
-            : undefined
-      };
-    }
-
-    return {
-      id: provider.id,
-      enabled: provider.enabled(),
-      class: provider.providerClass,
-      healthy: provider.enabled(),
-      degradedReason: provider.enabled() ? undefined : "Feature flag disabled."
-    };
-  });
+  return statuses;
 }
 
 async function analyzeWithZeroGpt(text: string): Promise<ProviderResult> {
